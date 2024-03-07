@@ -4,4 +4,4 @@ services:
     name: asistentes
     runtime: python
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "python map.py"
+    startCommand: "python -m gunicorn map:server -b:8000"

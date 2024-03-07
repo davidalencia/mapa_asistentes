@@ -95,6 +95,7 @@ cdmx_records = list(
 
 
 app = Dash(__name__)
+server = app.server
 
 app.layout = html.Div(
     [
@@ -171,5 +172,5 @@ def include_EDO(EDO, CDMX):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run_server()
     # app.run(debug=True)
