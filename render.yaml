@@ -1,0 +1,7 @@
+services:
+  - type: web
+    plan: free
+    name: asistentes
+    runtime: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python map.py"

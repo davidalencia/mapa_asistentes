@@ -1,4 +1,3 @@
-from doctest import debug
 from dash import Dash, dash_table, Input, Output, callback, dcc, html
 import dash_daq as daq
 
@@ -7,6 +6,8 @@ import geopandas as gpd
 from shapely.geometry.point import Point
 import base64
 from io import BytesIO
+import sys
+import os
 
 
 import matplotlib  # pip install matplotlib
@@ -17,12 +18,17 @@ import matplotlib_scalebar
 from matplotlib_scalebar.scalebar import ScaleBar
 
 
-mexico = gpd.read_file("mapa_mexico3")
+if getattr(sys, "frozen", False):
+    map_path = os.path.join(sys._MEIPASS, "mapa_mexico3")
+else:
+    map_path = "mapa_mexico3"
+
+mexico = gpd.read_file(map_path)
 # lat = 19.332829
 # lon = -99.185905
 
+
 def build_image(gp_map, lat, lon):
-    print(lat, lon)
     ax = gp_map.plot(
         column="asistentes",
         missing_kwds={
@@ -52,14 +58,13 @@ def build_image(gp_map, lat, lon):
 
     return fig_base64
 
+
 def to_meter_system(lat, lon):
     geometry = [Point((lon, lat))]
     geo_df = gpd.GeoDataFrame(geometry=geometry).set_crs("EPSG:4326")
     geo_df = geo_df.to_crs(epsg=32619)
     p = geo_df["geometry"].iloc[0]
     return p
-
-
 
 
 def format_table(EDO=True, CDMX=True):
@@ -94,8 +99,20 @@ app = Dash(__name__)
 app.layout = html.Div(
     [
         html.Img(id="map-fig"),
-        dcc.Input(id="input_lat", type="number", placeholder="Latitud", debounce=1, value=19.332829),
-        dcc.Input(id="input_lon", type="number", placeholder="Longitud", debounce=1, value=-99.185905),
+        dcc.Input(
+            id="input_lat",
+            type="number",
+            placeholder="Latitud",
+            debounce=1,
+            value=19.332829,
+        ),
+        dcc.Input(
+            id="input_lon",
+            type="number",
+            placeholder="Longitud",
+            debounce=1,
+            value=-99.185905,
+        ),
         daq.ToggleSwitch(
             id="EDO_switch",
             value=True,
@@ -154,5 +171,5 @@ def include_EDO(EDO, CDMX):
 
 
 if __name__ == "__main__":
-    # app.run()
-    app.run(debug=True)
+    app.run()
+    # app.run(debug=True)
